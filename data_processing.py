@@ -86,9 +86,6 @@ def get_data(split, data_set, extract_number = None, one_hot = False, shuffle = 
         example, = ds_test.take(1)
         x_test, y_test = example['image'], example['label']
 
-        #x_train = tf.expand_dims(x_train, axis=3)
-        #x_test = tf.expand_dims(x_test, axis=3)
-
         x_train = transform_data(x_train, mean = mean, sd = sd, padding = padding, padding_type = padding_type, random_crop = random_crop)
         x_test = transform_data(x_test, mean=mean, sd=sd, padding=padding, padding_type=padding_type,
                                  random_crop=random_crop)
@@ -117,21 +114,6 @@ def get_data(split, data_set, extract_number = None, one_hot = False, shuffle = 
             example_x = dat[0]
             example_x = tf.reshape(example_x, (extract_number, 3072))
 
-    '''
-    elif data_set == 'cifar10':
-        if split == 'train':
-            ds_train = tfds.load(name="cifar10", split="train")
-            ds_train = ds_train.batch(batch_size)
-            example, = ds_train.take(1)
-            example_x = example['image']
-            example_x = tf.reshape(example_x, (batch_size, 3072))
-        elif split == 'test':
-            ds_train = tfds.load(name="cifar10", split="test")
-            ds_train = ds_train.batch(batch_size)
-            example, = ds_train.take(1)
-            example_x = example['image']
-            example_x = tf.reshape(example_x, (batch_size, 3072))
-    '''
     if one_hot:
         return example_x, tf.one_hot(dat[1], depth = 10)
     else:
@@ -188,12 +170,6 @@ def get_data_loader(split, data_set, batch_size = 128, one_hot = False, shuffle 
         example, = ds_test.take(1)
         x_test, y_test = example['image'], example['label']
 
-        #(x_train, y_train), (x_test, y_test) = cifar10.load_data()
-        #x_train, y_train = tuple(zip(*train_ds))
-        #x_test, y_test = tuple(zip(*test_ds))
-        #if len(x_train.shape) < 4:
-        #    x_train = tf.expand_dims(x_train, axis=3)
-        #    x_test = tf.expand_dims(x_test, axis=3)
         x_train = transform_data(x_train, mean=mean, sd=sd, padding=padding, padding_type=padding_type,
                                  random_crop=random_crop)
         x_test = transform_data(x_test, mean=mean, sd=sd, padding=padding, padding_type=padding_type,
