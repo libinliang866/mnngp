@@ -4,8 +4,6 @@ from mnngp import MNNGPKernel
 from data_processing import get_data
 from configuration import *
 import numpy as np
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 class gpr():
     def __init__(self, mnngp, x_train, x_test, y_train, stability_eps):
@@ -19,13 +17,9 @@ class gpr():
 
     def _build_data_data(self, x_train):
         self.k_data_data = self.mnngp.k_full(x_train)
-        #self.k_data_data = tf.cast(self.k_data_data, tf.float64)
-        #self.k_data_data.numpy()
-        #np.save('k_data_data_64.npy', self.k_data_data)
 
     def _build_data_test(self, x_train, x_test):
         self.k_data_test = self.mnngp.k_full(x_train, x_test)
-        #self.k_data_test = tf.cast(self.k_data_test, tf.float64)
 
     def _predict(self):
         self._build_data_data(self.x_train)
@@ -37,14 +31,6 @@ class gpr():
         else:
             self.k_data_data_reg = self.k_data_data + tf.eye(
                 self.x_train.shape[0], dtype=tf.float32) * self.stability_eps
-        #self.k_data_data_reg = tf.cast(self.k_data_data_reg, tf.float64)
-        #self.k_data_test = tf.cast(self.k_data_test, tf.float64)
-        #self.y_train = tf.cast(self.y_train, tf.float64)
-
-        #for i in range(10):
-        #    print('-------')
-        #    print(i)
-        #    print(self.k_data_data_reg[i,i])
 
         self.l = tf.linalg.cholesky(self.k_data_data_reg)
         self.v = tf.linalg.triangular_solve(self.l, self.y_train)
