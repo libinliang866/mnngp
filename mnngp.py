@@ -1,5 +1,5 @@
 import tensorflow as tf
-from gen_grid import _compute_cov_grid, _compute_var
+from cluster.gen_grid import _compute_cov_grid, _compute_var
 import configuration as config
 import numpy as np
 from interpolate import _interpolate
@@ -117,22 +117,6 @@ class MNNGPKernel(object):
             current_y_cor = current_y_cov/(current_y_var + eps)
 
         return current_y_cov
-
-
-
-if __name__ == '__main__':
-    dat_train, y_train = get_data(split = 'train', extract_number = 25000, one_hot = True, data_set = 'cifar10', shuffle = False)
-    dat_test, y_test = get_data(split = 'test', extract_number = 10000, one_hot = True, data_set = 'cifar10')
-
-    dat_train = tf.cast(dat_train, tf.float64)
-    dat_test = tf.cast(dat_test, tf.float64)
-
-    mnn_kernel = MNNGPKernel(depth = 3, q = 2, weight_var = 1, bias_var = 0.0, n_grid = 100, grid_max = 10, n_corr = 501)
-    mnn_kernel.get_grid()
-    #k_data_data = mnn_kernel.k_full(dat_train)
-    mnn_kernel.k_full_split('matrixs/', 'training_set', 4, dat_train)
-    mnn_kernel.k_full_split('matrixs/', 'training_testing_set', 4, input1 = dat_train, input2 = dat_test)
-
 
 
 
