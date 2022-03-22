@@ -98,9 +98,6 @@ class gpr_block():
 
 
 
-
-
-
 if __name__ == '__main__':
 
     dat_train, y_train = get_data(split = 'train', extract_number = 10000, one_hot = True, data_set = 'cifar10', shuffle = False)

@@ -1,9 +1,6 @@
 
 import tensorflow as tf
-from mnngp import MNNGPKernel
-from data_processing import get_data
 from configuration import *
-import numpy as np
 
 class gpr():
     def __init__(self, mnngp, x_train, x_test, y_train, stability_eps):
