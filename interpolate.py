@@ -15,12 +15,6 @@ def _interpolate(cors, grid_data, cor_grid, n_corr):
 
     cor_gap = cor_grid[1] - cor_grid[0]
 
-    #print('---compare---')
-    #cor_gap = np.float64(2.0 / (n_corr - 1))
-    #print(type(cor_gap))
-    #print(cor_gap)
-
-    #print(spacing)
     if use_float64:
         cors = tf.convert_to_tensor(cors, dtype=tf.float64)
     else:
@@ -43,13 +37,7 @@ def _interpolate(cors, grid_data, cor_grid, n_corr):
     else:
         cor_floor = tf.cast(tf.gather(grid_data, ind_floor), tf.float32)
         cor_ceiling = tf.cast(tf.gather(grid_data, ind_ceiling), tf.float32)
-    #print('interpolate')
-    #print(weight_floor[0])
-    #print(weight_ceiling[0])
-    #print(ind_floor)
-    #print(ind_ceiling)
-    #print(cor_floor)
-    #print(cor_ceiling)
+
     cor_out = weight_floor * cor_floor + weight_ceiling * cor_ceiling
     return cor_out
 
