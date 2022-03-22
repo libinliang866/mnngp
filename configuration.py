@@ -13,6 +13,3 @@ padding = 0
 padding_type = 'zero'
 random_crop = None
 use_float64 = True
-
-### training
-lr = 2e-4
