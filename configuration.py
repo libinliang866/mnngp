@@ -2,8 +2,8 @@
 
 ### load data
 read_cur_grid = True
-save_grid_path = 'cov_grid.npy'
-save_cor_grid_path = 'cor_grid.npy'
+save_grid_path = 'tables/cov_grid.npy'
+save_cor_grid_path = 'tables/cor_grid.npy'
 
 
 ### data processing

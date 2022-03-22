@@ -44,7 +44,7 @@ def _interpolate(cors, grid_data, cor_grid, n_corr):
 
 
 if __name__ == '__main__':
-    cov_grid = np.load('cov_grid.npy')
+    cov_grid = np.load('tables/cov_grid.npy')
     cors = np.array([[1.        , 0.45898909 ,0.09015102 ,0.24325917, 0.23596064],
                     [0.45898909, 1.        , 0.07629992 ,0.17663187 ,0.30092455],
                     [0.09015102 ,0.07629992 ,1.        , 0.02776858 ,0.15098041],
