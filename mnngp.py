@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from gen_grid import _compute_cov_grid, _compute_var
 import configuration as config
@@ -28,7 +27,7 @@ class MNNGPKernel(object):
         else:
             self.grid_data, self.cor_grid = _compute_cov_grid(n_grid, grid_max, n_corr, q)
             np.save(config.save_grid_path, self.grid_data)
-            np.save(config.save_cor_grid_path, self.grid_data)
+            np.save(config.save_cor_grid_path, self.cor_grid)
 
     def internpolate(self, cors):
         cors = _interpolate(cors, self.grid_data, self.cor_grid, self.n_corr)
@@ -40,21 +39,6 @@ class MNNGPKernel(object):
         x_normalized = (x - mean) / tf.sqrt(var + eps)
         return x_normalized
 
-    '''
-    def k_diag(self, input_x):
-        current_q_var = self.weight_var * tf.convert_to_tensor([1.], dtype = tf.float64) + self.bias_var
-
-        for l in range(self.depth):
-            if l == 0:
-                current_q_var = current_q_var * _compute_var(self.n_grid, self.grid_max, self.q)
-            else:
-                current_q_var = self.weight_var * tf.convert_to_tensor([current_q_var], dtype=tf.float64) + self.bias_var
-                current_q_var = current_q_var * _compute_var(self.n_grid, self.grid_max, self.q)
-
-        current_q_var = self.weight_var * tf.convert_to_tensor([current_q_var], dtype=tf.float64) + self.bias_var
-
-        return current_q_var
-    '''
     def k_full_split(self, save_file, name,  n_blocks, input1, input2 = None):
         eps = 1e-4
 
@@ -65,22 +49,14 @@ class MNNGPKernel(object):
         if input2 is None:
             for i in range(n_blocks):
                 for j in range(n_blocks):
-                    print(i, j)
-
-                    #input_temp = tf.gather(input1, (n_blocks * n_blocks_size):((n_blocks + 1) * n_blocks_size))
                     input_temp1 = input1[(i * n_blocks_size):((i + 1) * n_blocks_size)]
                     input_temp2 = input1[(j * n_blocks_size):((j + 1) * n_blocks_size)]
 
-                    print(input_temp1)
-
-
                     cov_init = tf.matmul(input_temp1, input_temp2, transpose_b = True)/input_temp1.shape[1]
-                    #cov_cur = tf.matmul(input_temp1, input_temp2, transpose_b=True) / input_temp1.shape[1]
                     del input_temp1, input_temp2
 
                     current_y_var = self.weight_var + self.bias_var
                     current_y_cov = self.weight_var * cov_init + self.bias_var
-                    #cov_cur = self.weight_var * cov_cur + self.bias_var
 
                     current_y_cor = current_y_cov / (current_y_var + eps)
 
@@ -92,21 +68,16 @@ class MNNGPKernel(object):
                         current_y_var = self.weight_var * current_z_var + self.bias_var
                         current_y_cov = self.weight_var * current_z_cov + self.bias_var
                         current_y_cor = current_y_cov / (current_y_var + eps)
-                    #print(current_y_cov)
                     np.save(save_file + name + '_' + str(i) + '_' + str(j) + '.npy', current_y_cov.numpy())
-                    #del current_y_cov, current_y_var, current_y_cor
         else:
             input2 = self._input_layer_normalization(input2)
             for i in range(n_blocks):
                 input_temp1 = input1[(i * n_blocks_size):((i + 1) * n_blocks_size)]
 
                 cov_init = tf.matmul(input_temp1, input2, transpose_b=True) / input_temp1.shape[1]
-                # cov_cur = tf.matmul(input_temp1, input_temp2, transpose_b=True) / input_temp1.shape[1]
                 del input_temp1
-
                 current_y_var = self.weight_var + self.bias_var
                 current_y_cov = self.weight_var * cov_init + self.bias_var
-                # cov_cur = self.weight_var * cov_cur + self.bias_var
 
                 current_y_cor = current_y_cov / (current_y_var + eps)
 
@@ -118,16 +89,10 @@ class MNNGPKernel(object):
                     current_y_var = self.weight_var * current_z_var + self.bias_var
                     current_y_cov = self.weight_var * current_z_cov + self.bias_var
                     current_y_cor = current_y_cov / (current_y_var + eps)
-                # print(current_y_cov)
                 np.save(save_file + name + '_' + str(i) + '.npy', current_y_cov.numpy())
-                # del current_y_cov, current_y_var, current_y_cor
 
     def k_full(self, input1, input2 = None):
         eps = 1e-4
-        #if input2 == None:
-        #    k_data_data_flag = 1
-        #else:
-        #    k_data_data_flag = 0
 
         input1 = self._input_layer_normalization(input1)
         if input2 is None:
@@ -142,29 +107,11 @@ class MNNGPKernel(object):
         current_y_cov = self.weight_var * cov_init + self.bias_var
         current_y_cor = current_y_cov/(current_y_var + eps)
 
-
-
         gamma_q = _compute_var(self.n_grid, self.grid_max, self.q)
         for l in range(self.depth):
             current_z_cov = current_y_var * _interpolate(current_y_cor, grid_data = self.grid_data, cor_grid = self.cor_grid, n_corr = self.n_corr)
             current_z_var = current_y_var * gamma_q
-            #print('---current-y-cor-----')
-            #print(current_y_cor[0])
 
-            #if k_data_data_flag == 1:
-            for i in range(10):
-                    #if current_z_cov[i,i] > 1.3:
-                    print(i)
-                    print('--------')
-                    print(current_z_cov[i,i])
-                    print(current_y_cov[i,i])
-                    print(current_y_cor[i,i])
-
-            #print('---interpolate')
-            #print(_interpolate(current_y_cor, grid_data = self.grid_data, n_corr = self.n_corr)[0])
-
-            #print('---current-z-cov-----')
-            #print(current_z_cov)
             current_y_var = self.weight_var * current_z_var + self.bias_var
             current_y_cov = self.weight_var * current_z_cov + self.bias_var
             current_y_cor = current_y_cov/(current_y_var + eps)
