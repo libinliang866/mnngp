@@ -3,10 +3,10 @@ import tensorflow as tf
 from configuration import *
 
 class gpr():
-    def __init__(self, mnngp, x_train, x_test, y_train, stability_eps):
+    def __init__(self, mnngp, x_train, x_test, y_train, size_b_1, stability_eps):
         self.mnngp = mnngp
         self.mnngp.get_grid()
-
+        self.size_b_1 = size_b_1
         self.stability_eps = stability_eps
         self.x_train = x_train
         self.x_test = x_test
