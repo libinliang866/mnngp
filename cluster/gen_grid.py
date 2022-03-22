@@ -6,7 +6,6 @@ import multiprocessing as mp
 import functools
 from itertools import product
 
-
 def norm_cdf(x, rv):
     return rv.cdf(x)
 
