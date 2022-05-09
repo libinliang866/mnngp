@@ -71,15 +71,28 @@ class gpr():
         self.k_data_data_b_11 = self.k_data_data_b_11 - tf.matmul(
             tf.matmul(self.k_data_data_b_12, self.k_data_data_b_21), self.k_data_data_b_11)
 
-        if variance == True:
-            continue
-        else:
-            fmean = tf.matmul(
-                self.k_data_test_1 @ self.k_data_data_b_11 + tf.matmul(self.k_data_test_2, self.k_data_data_b_12,
-                                                                       transpose_b=True),
-                self.y_train[:self.size_b_1, :]) + tf.matmul(
-                self.k_data_test_1 @ self.k_data_data_b_12 + self.k_data_test_2 @ self.k_data_data_b_22,
-                self.y_train[self.size_b_1:, ])
+        fmean = tf.matmul(
+            self.k_data_test_1 @ self.k_data_data_b_11 + tf.matmul(self.k_data_test_2, self.k_data_data_b_12,
+                                                                   transpose_b=True),
+            self.y_train[:self.size_b_1, :]) + tf.matmul(
+            self.k_data_test_1 @ self.k_data_data_b_12 + self.k_data_test_2 @ self.k_data_data_b_22,
+            self.y_train[self.size_b_1:, ])
 
+        if variance == True:
+            k_test_test_diag = tf.linalg.diag_part(self.mnngp.k_full(self.x_test))
+            k_test_test_diag_part2 = tf.linalg.diag_part(
+                tf.matmul(tf.matmul(self.k_data_test_1, self.k_data_data_b_11), self.k_data_test_1, transpose_b=True))
+            k_test_test_diag_part2 += tf.linalg.diag_part(
+                tf.matmul(tf.matmul(self.k_data_test_2, self.k_data_data_b_12, transpose_b=True), self.k_data_test_1,
+                          transpose_b=True))
+            k_test_test_diag_part2 += tf.linalg.diag_part(
+                tf.matmul(tf.matmul(self.k_data_test_1, self.k_data_data_b_12), self.k_data_test_2, transpose_b=True))
+            k_test_test_diag_part2 += tf.linalg.diag_part(
+                tf.matmul(tf.matmul(self.k_data_test_2, self.k_data_data_b_22), self.k_data_test_2, transpose_b=True))
+            fvar = k_test_test_diag - k_test_test_diag_part2
+
+            fvar = tf.tile(tf.reshape(fvar, (-1, 1)), [1, self.y_train.shape[1]])
+            return fmean, fvar
+        else:
             return fmean
 
