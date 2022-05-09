@@ -53,7 +53,7 @@ class gpr():
         else:
             return fmean
 
-    def _predict_v2(self):
+    def _predict_v2(self, variance):
         self._build_data_v2(self.x_train, self.x_test)
 
         self.k_data_data_b_11 = self.k_data_data_b_11 + tf.eye(
@@ -71,12 +71,15 @@ class gpr():
         self.k_data_data_b_11 = self.k_data_data_b_11 - tf.matmul(
             tf.matmul(self.k_data_data_b_12, self.k_data_data_b_21), self.k_data_data_b_11)
 
-        fmean = tf.matmul(
-            self.k_data_test_1 @ self.k_data_data_b_11 + tf.matmul(self.k_data_test_2, self.k_data_data_b_12,
-                                                                   transpose_b=True),
-            self.y_train[:self.size_b_1, :]) + tf.matmul(
-            self.k_data_test_1 @ self.k_data_data_b_12 + self.k_data_test_2 @ self.k_data_data_b_22,
-            self.y_train[self.size_b_1:, ])
+        if variance == True:
+            continue
+        else:
+            fmean = tf.matmul(
+                self.k_data_test_1 @ self.k_data_data_b_11 + tf.matmul(self.k_data_test_2, self.k_data_data_b_12,
+                                                                       transpose_b=True),
+                self.y_train[:self.size_b_1, :]) + tf.matmul(
+                self.k_data_test_1 @ self.k_data_data_b_12 + self.k_data_test_2 @ self.k_data_data_b_22,
+                self.y_train[self.size_b_1:, ])
 
-        return fmean
+            return fmean
 
