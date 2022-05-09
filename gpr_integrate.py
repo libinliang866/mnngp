@@ -25,7 +25,7 @@ class gpr():
         self.k_data_test_1 = self.mnngp.k_full(self.x_test, self.x_train[:self.size_b_1, :])
         self.k_data_test_2 = self.mnngp.k_full(self.x_test, self.x_train[self.size_b_1:, :])
 
-    def _predict_v1(self):
+    def _predict_v1(self, variance = False):
         self._build_data_v1(self.x_train, self.x_train)
 
         if use_float64:
@@ -42,7 +42,16 @@ class gpr():
 
         fmean = tf.matmul(a, self.v, transpose_a=True)
 
-        return fmean
+        if variance == True:
+            k_test_test_diag = tf.linalg.diag_part(self.mnngp.k_full(self.x_test))
+            a = tf.linalg.triangular_solve(self.l, self.k_data_test)
+
+            fvar = k_test_test_diag - tf.reduce_sum(tf.square(a), 0)
+            fvar = tf.tile(tf.reshape(fvar, (-1, 1)), [1, self.y_train.shape[1]])
+
+            return fmean, fvar
+        else:
+            return fmean
 
     def _predict_v2(self):
         self._build_data_v2(self.x_train, self.x_test)
