@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from configuration import *
 
-def _interpolate(cors, grid_data, cor_grid, n_corr):
+def _interpolate(cors, grid_data, cor_grid):
     '''
     grid_data = grid_data.astype(np.float64)
     cors = tf.convert_to_tensor(cors, dtype=tf.float64)
