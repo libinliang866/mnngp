@@ -26,7 +26,7 @@ class gpr():
         self.k_data_test_2 = self.mnngp.k_full(self.x_test, self.x_train[self.size_b_1:, :])
 
     def _predict_v1(self, variance = False):
-        self._build_data_v1(self.x_train, self.x_train)
+        self._build_data_v1(self.x_train, self.x_test)
 
         if use_float64:
             self.k_data_data_reg = self.k_data_data + tf.eye(
