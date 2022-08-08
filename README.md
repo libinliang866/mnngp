@@ -2,7 +2,7 @@
 
 This is the code for the implementation of the bayesian inference based on the deep maxout network gaussian process.
 
-Contributor: Libin Liang, Ye Tian and Ge Cheng
+Contributor: Libin Liang, Ye Tian and Ge Cheng.
 
 ## Introduction
 
