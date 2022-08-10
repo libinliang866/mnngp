@@ -1,6 +1,6 @@
 # MNNGP: Deep Maxout Network Gaussian Process
 
-This is the code for the implementation of the bayesian inference based on the deep maxout network gaussian process.
+This is the code for the implementation of the bayesian inference based on [**Deep Maxout Network Gaussian Process**](https://arxiv.org/pdf/2208.04468.pdf).
 
 Contributor: Libin Liang, Ye Tian and Ge Cheng.
 
